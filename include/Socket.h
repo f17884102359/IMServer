@@ -10,15 +10,17 @@ extern "C" {
 class Socket {
 public:
     Socket(int domain, int type, int protocol);
+    Socket(int sock): _sock(sock) {};
     ~Socket();
 
     int Sock() {return _sock;}
     int Bind(IPAddress& addr);
     int Listen(int backlog = 5);
-    int Accept(IPAddress& clientAddr);
+    Socket *Accept();
     int Connect(IPAddress& addr);
     ssize_t Send(const void* buffer, size_t length);
     ssize_t Recv(void* buffer, size_t length);
+    int SetNonBlocking();
 
 private:
     int _sock;

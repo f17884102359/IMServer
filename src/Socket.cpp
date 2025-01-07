@@ -1,7 +1,9 @@
-#include "Socket.h"
 #include <arpa/inet.h>
 #include <cstring>
 #include <iostream>
+#include <fcntl.h>
+#include "Log.h"
+#include "Socket.h"
 
 // 构造函数：创建套接字
 Socket::Socket(int domain, int type, int protocol) {
@@ -30,24 +32,20 @@ int Socket::Listen(int backlog) {
     return listen(_sock, backlog);
 }
 
-// Accept函数：接受传入的连接
-int Socket::Accept(IPAddress& clientAddr) {
-    socklen_t len;
-    int clientSock;
-    
-    if (clientAddr.Addr()->isipv6) {
-        len = sizeof(clientAddr.Addr()->addr.ip6);
-        clientSock = accept(_sock, (struct sockaddr*)&clientAddr.Addr()->addr.ip6, &len);
-    } else {
-        len = sizeof(clientAddr.Addr()->addr.ip4);
-        clientSock = accept(_sock, (struct sockaddr*)&clientAddr.Addr()->addr.ip4, &len);
+int Socket::SetNonBlocking() {
+    int flags = fcntl(_sock, F_GETFL, 0);
+    if (flags == -1) {
+        LOG(Error) << "fcntl get failed";
+        return -1;
     }
-    
-    if (clientSock < 0) {
-        std::cerr << "Accept failed." << std::endl;
+
+    flags |= O_NONBLOCK;
+    if (fcntl(_sock, F_SETFL, flags) == -1) {
+        LOG(Error) << "fcntl set failed";
+        return -1;
     }
-    
-    return clientSock;
+
+    return 0;
 }
 
 // Connect函数：客户端向服务器发起连接
