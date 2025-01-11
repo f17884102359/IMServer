@@ -34,6 +34,16 @@ int ServerInit()
         return -1;
     }
 
+    if (Listener->Sock()->SetReuseAddr() == -1) {
+        LOG(Error) << "Listener set reuse address failed";
+        return -1;
+    }
+
+    if (Listener->Sock()->SetReusePort() == -1) {
+        LOG(Error) << "Listener set reuse port failed";
+        return -1;
+    }
+
     if (Listener->Sock()->Bind(*Listener->Addr()) == -1) {
         LOG(Error) << "Listener bind failed";
         return -1;

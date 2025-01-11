@@ -82,6 +82,16 @@ int BasicNode::Accept()
         goto err;
     }
 
+    if (client->Sock()->SetReuseAddr() == -1) {
+        LOG(Error) << "client set reuse address failed";
+        goto err;
+    }
+
+    if (client->Sock()->SetReusePort() == -1) {
+        LOG(Error) << "client set reuse port failed";
+        goto err;
+    }
+
     if (client->NewAddr(client_addr4.sin_addr.s_addr, client_addr4.sin_port) == false) {
         LOG(Error) << "new client address failed";
         goto err;

@@ -48,6 +48,26 @@ int Socket::SetNonBlocking() {
     return 0;
 }
 
+int Socket::SetReuseAddr() {
+    int opt = 1;
+    if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+        LOG(Error) << "setsockopt failed";
+        return -1;
+    }
+
+    return 0;
+}
+
+int Socket::SetReusePort() {
+    int opt = 1;
+    if (setsockopt(_sock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+        LOG(Error) << "setsockopt failed";
+        return -1;
+    }
+
+    return 0;
+}
+
 // Connect函数：客户端向服务器发起连接
 int Socket::Connect(IPAddress& addr) {
     if (addr.Addr()->isipv6) {
